@@ -38,21 +38,21 @@ class TreeMerge
 
         $spouses1 = '';
         $children1 = '';
-        if ($leftDb->pers_fams) {
-            $fams = explode(';', $leftDb->pers_fams);
-            foreach ($fams as $value) {
-                $famDb = $db_functions->get_family($value);
+        $left_relations = $db_functions->get_relations($leftDb->pers_id);
+        if (isset($left_relations) && count($left_relations) > 0) {
+            foreach ($left_relations as $relation) {
+                $famDb = $db_functions->get_family_with_id($relation->relation_id);
 
-                $spouse_ged = $famDb->fam_man == $leftDb->pers_gedcomnumber ? $famDb->fam_woman : $famDb->fam_man;
+                $spouse_ged = $famDb->partner1_gedcomnumber == $leftDb->pers_gedcomnumber ? $famDb->partner2_gedcomnumber : $famDb->partner1_gedcomnumber;
                 $spouseDb = $db_functions->get_person($spouse_ged);
                 $privacy = $personPrivacy->get_privacy($spouseDb);
                 $name = $personName->get_person_name($spouseDb, $privacy);
                 $spouses1 .= $name["standard_name"] . '<br>';
 
-                if ($famDb->fam_children) {
-                    $child = explode(';', $famDb->fam_children);
-                    foreach ($child as $ch_value) {
-                        $childDb = $db_functions->get_person($ch_value);
+                $children = $db_functions->get_children($famDb->fam_id);
+                if ($children) {
+                    foreach ($children as $child) {
+                        $childDb = $db_functions->get_person_with_id($child->person_id);
                         $privacy = $personPrivacy->get_privacy($childDb);
                         $name = $personName->get_person_name($childDb, $privacy);
                         $children1 .= $name["standard_name"] . '<br>';
@@ -65,17 +65,15 @@ class TreeMerge
 
         $father1 = '';
         $mother1 = '';
-        if ($leftDb->pers_famc) {
-            $qry2 = "SELECT * FROM humo_families WHERE fam_tree_id='" . $this->trees['tree_id'] . "' AND fam_gedcomnumber ='" . $leftDb->pers_famc . "'";
-            $parents = $this->dbh->query($qry2);
-            $parentsDb = $parents->fetch(PDO::FETCH_OBJ);
+        if ($leftDb->parent_relation_id) {
+            $parentsDb = $db_functions->get_family_partners($leftDb->parent_relation_id);
 
-            $fatherDb = $db_functions->get_person($parentsDb->fam_man);
+            $fatherDb = $db_functions->get_person_with_id($parentsDb->partner1_id);
             $privacy = $personPrivacy->get_privacy($fatherDb);
             $name = $personName->get_person_name($fatherDb, $privacy);
             $father1 .= $name["standard_name"] . '<br>';
 
-            $motherDb = $db_functions->get_person($parentsDb->fam_woman);
+            $motherDb = $db_functions->get_person_with_id($parentsDb->partner2_id);
             $privacy = $personPrivacy->get_privacy($motherDb);
             $name = $personName->get_person_name($motherDb, $privacy);
             $mother1 .= $name["standard_name"] . '<br>';
@@ -86,20 +84,21 @@ class TreeMerge
 
         $spouses2 = '';
         $children2 = '';
-        if ($rightDb->pers_fams) {
-            $fams = explode(';', $rightDb->pers_fams);
-            foreach ($fams as $value) {
-                $famDb = $db_functions->get_family($value);
-                $spouse_ged = $famDb->fam_man == $rightDb->pers_gedcomnumber ? $famDb->fam_woman : $famDb->fam_man;
+        $right_relations = $db_functions->get_relations($rightDb->pers_id);
+        if (isset($right_relations) && count($right_relations) > 0) {
+            foreach ($right_relations as $relation) {
+                $famDb = $db_functions->get_family_with_id($relation->relation_id);
+                // TODO use id's
+                $spouse_ged = $famDb->partner1_gedcomnumber == $rightDb->pers_gedcomnumber ? $famDb->partner2_gedcomnumber : $famDb->partner1_gedcomnumber;
                 $spouseDb = $db_functions->get_person($spouse_ged);
                 $privacy = $personPrivacy->get_privacy($spouseDb);
                 $name = $personName->get_person_name($spouseDb, $privacy);
                 $spouses2 .= $name["standard_name"] . '<br>';
 
-                if ($famDb->fam_children) {
-                    $child = explode(';', $famDb->fam_children);
-                    foreach ($child as $ch_value) {
-                        $childDb = $db_functions->get_person($ch_value);
+                $children = $db_functions->get_children($famDb->fam_id);
+                if ($children) {
+                    foreach ($children as $child) {
+                        $childDb = $db_functions->get_person_with_id($child->person_id);
                         $privacy = $personPrivacy->get_privacy($childDb);
                         $name = $personName->get_person_name($childDb, $privacy);
                         $children2 .= $name["standard_name"] . '<br>';
@@ -112,17 +111,15 @@ class TreeMerge
 
         $father2 = '';
         $mother2 = '';
-        if ($rightDb->pers_famc && $rightDb->pers_famc != "") {
-            $qry2 = "SELECT * FROM humo_families WHERE fam_tree_id='" . $this->trees['tree_id'] . "' AND fam_gedcomnumber ='" . $rightDb->pers_famc . "'";
-            $parents = $this->dbh->query($qry2);
-            $parentsDb = $parents->fetch(PDO::FETCH_OBJ);
+        if ($rightDb->parent_relation_id && $rightDb->parent_relation_id != "") {
+            $parentsDb = $db_functions->get_family_partners($rightDb->parent_relation_id);
 
-            $fatherDb = $db_functions->get_person($parentsDb->fam_man);
+            $fatherDb = $db_functions->get_person_with_id($parentsDb->partner1_id);
             $privacy = $personPrivacy->get_privacy($fatherDb);
             $name = $personName->get_person_name($fatherDb, $privacy);
             $father2 .= $name["standard_name"] . '<br>';
 
-            $motherDb = $db_functions->get_person($parentsDb->fam_woman);
+            $motherDb = $db_functions->get_person_with_id($parentsDb->partner2_id);
             $privacy = $personPrivacy->get_privacy($motherDb);
             $name = $personName->get_person_name($motherDb, $privacy);
             $mother2 .= $name["standard_name"] . '<br>';
@@ -198,10 +195,10 @@ class TreeMerge
 
             //TEST *** Address by relation ***
             // A person can be married multiple times (left and right side). Probably needed to rebuild show_addresses_merge scripts to show them seperately?
-            //$r_fams = explode(';',$rightDb->pers_fams);
-            //for($i=0;$i<count($r_fams);$i++) {
-            //	echo $r_fams[$i].'! ';
-            //	show_addresses_merge('',$r_fams[$i]);
+            //$relations = $db_functions->get_relations($rightDb->pers_id);
+            //foreach ($relations as $relation) {
+            //	echo $relation->relation_gedcomnumber.'! ';
+            //	show_addresses_merge('',$relation->relation_gedcomnumber);
             //}
             ?>
 

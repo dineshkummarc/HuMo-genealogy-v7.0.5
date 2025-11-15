@@ -25,6 +25,12 @@ if (!isset($field['group_menu_cms'])) {
     $sql = "ALTER TABLE humo_groups ADD group_menu_cms VARCHAR(1) CHARACTER SET utf8 NOT NULL DEFAULT 'y' AFTER group_menu_login;";
     $dbh->query($sql);
 }
+
+if (!isset($field['group_menu_chat'])) {
+    $sql = "ALTER TABLE humo_groups ADD group_menu_chat VARCHAR(1) CHARACTER SET utf8 NOT NULL DEFAULT 'y' AFTER group_menu_cms;";
+    $dbh->query($sql);
+}
+
 if (!isset($field['group_show_age_living_person'])) {
     $sql = "ALTER TABLE humo_groups ADD group_show_age_living_person VARCHAR(1) CHARACTER SET utf8 NOT NULL DEFAULT 'y' AFTER group_maps_presentation;";
     $dbh->query($sql);
@@ -131,6 +137,11 @@ $groupDb = $groupresult->fetch(PDO::FETCH_OBJ);
         <tr>
             <td><?= __('INFORMATION menu: show "CMS" pages'); ?></td>
             <td><input type="checkbox" name="group_menu_cms" class="form-check-input" <?php if ($groupDb->group_menu_cms != 'n') echo ' checked'; ?>></td>
+        </tr>
+
+        <tr>
+            <td><?= __('Chat menu: show "Chat Genealogy" page'); ?></td>
+            <td><input type="checkbox" name="group_menu_chat" class="form-check-input" <?php if ($groupDb->group_menu_chat != 'n') echo ' checked'; ?>></td>
         </tr>
 
         <tr>

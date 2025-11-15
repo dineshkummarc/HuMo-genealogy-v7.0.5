@@ -30,7 +30,6 @@ class EventManager
         $parseGedcomDate = new ParseGedcomDate();
 
 
-
         // TODO: check if all data fields are empty if update is done, if empty: remove the event.
 
 
@@ -54,11 +53,11 @@ class EventManager
                 // *** Generate a new order number ***
                 // Also check event_gedcom?
                 $event_sql = "SELECT * FROM humo_events
-                WHERE event_tree_id = :tree_id
-                AND event_connect_kind = :event_connect_kind
-                AND event_connect_id = :event_connect_id
-                AND event_kind = :event_kind
-                ORDER BY event_order DESC LIMIT 0,1";
+                    WHERE event_tree_id = :tree_id
+                    AND event_connect_kind = :event_connect_kind
+                    AND event_connect_id = :event_connect_id
+                    AND event_kind = :event_kind
+                    ORDER BY event_order DESC LIMIT 0,1";
                 $event_qry = $this->dbh->prepare($event_sql);
                 $event_qry->bindValue(':tree_id', $data['tree_id'], PDO::PARAM_STR);
                 $event_qry->bindValue(':event_connect_kind', $data['event_connect_kind'], PDO::PARAM_STR);
@@ -126,8 +125,7 @@ class EventManager
                 'event_gedcomnr',
                 'event_connect_kind',
                 'event_connect_id',
-                'event_kind',
-                'event_event_extra'
+                'event_kind'
             ];
             $columns = array_merge($columns, $columns2);
 
@@ -136,8 +134,7 @@ class EventManager
                 ':event_gedcomnr',
                 ':event_connect_kind',
                 ':event_connect_id',
-                ':event_kind',
-                ':event_event_extra'
+                ':event_kind'
             ];
             $values = array_merge($values, $values2);
 
@@ -168,6 +165,12 @@ class EventManager
         if (isset($data['event_gedcom'])) {
             $columns[] = 'event_gedcom';
             $values[] = ':event_gedcom';
+        }
+
+        // *** Changed nov. 2025 ***
+        if (isset($data['event_event_extra'])) {
+            $columns[] = 'event_event_extra';
+            $values[] = ':event_event_extra';
         }
 
         if (isset($data['event_connect_kind2'])) {
@@ -267,6 +270,12 @@ class EventManager
         if (isset($data['event_gedcom'])) {
             $stmt->bindValue(':event_gedcom', $data['event_gedcom'], PDO::PARAM_STR);
         }
+        // *** Changed nov. 2025 ***
+        if (isset($data['event_event_extra'])) {
+            $stmt->bindValue(':event_event_extra', $data['event_event_extra'], PDO::PARAM_STR);
+        } else {
+            $stmt->bindValue(':event_event_extra', '', PDO::PARAM_STR);
+        }
 
         if (isset($data['event_connect_kind2'])) {
             $stmt->bindValue(':event_connect_kind2', $data['event_connect_kind2'], PDO::PARAM_STR);
@@ -315,9 +324,6 @@ class EventManager
             if (!isset($data['event_gedcomnr'])) {
                 $data['event_gedcomnr'] = NULL;
             }
-            if (!isset($data['event_event_extra'])) {
-                $data['event_event_extra'] = NULL;
-            }
 
             $stmt->bindValue(':event_order', $event_order, PDO::PARAM_INT);
             $stmt->bindValue(':event_gedcomnr', $data['event_gedcomnr'], PDO::PARAM_STR);
@@ -325,7 +331,6 @@ class EventManager
             $stmt->bindValue(':event_connect_id', $data['event_connect_id'], PDO::PARAM_STR);
             $stmt->bindValue(':event_kind', $data['event_kind'], PDO::PARAM_STR);
             //$stmt->bindValue(':event_event', $data['event_event'], PDO::PARAM_STR);
-            $stmt->bindValue(':event_event_extra', $data['event_event_extra'], PDO::PARAM_STR);
             $stmt->bindValue(':event_gedcom', $data['event_gedcom'], PDO::PARAM_STR);
         }
 
