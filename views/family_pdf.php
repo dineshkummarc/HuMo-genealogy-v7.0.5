@@ -552,7 +552,9 @@ if (!empty($pdf_source) and ($data["source_presentation"] == 'footnote' or $user
         if (isset($pdf_source[$key])) {
             $pdf->SetLink($pdf_footnotes[$count - 1], -1);
             $pdf->SetFont($pdf->pdf_font, 'B', 10);
-            $pdf->Write(6, $count . ". ");
+            //$pdf->Write(6, $count . ". ");
+            $pdf->Write(6, '[' . $count . "] ");
+
             if ($user['group_sources'] == 'j') {
                 $showSourcePDF->source_display_pdf($pdf_source[$key]);  // function source_display from source.php, called with source nr.
             } elseif ($user['group_sources'] == 't') {
