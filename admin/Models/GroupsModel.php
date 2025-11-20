@@ -31,7 +31,7 @@ class GroupsModel extends AdminBaseModel
             group_religion='n', group_place_date='n', group_kindindex='n', group_event='n', group_addresses='n',
             group_own_code='n', group_pdf_button='y', group_rtf_button='n', group_work_text='n', group_texts='j',
             group_family_presentation='compact', group_maps_presentation='hide',
-            group_menu_cms='y', group_menu_chat='y', group_menu_persons='j', group_menu_names='j', group_menu_login='j', group_menu_change_password='y',
+            group_menu_cms='y', group_menu_chat='n', group_menu_persons='j', group_menu_names='j', group_menu_login='j', group_menu_change_password='y',
             group_showstatistics='j', group_relcalc='j', group_googlemaps='j', group_contact='j', group_latestchanges='j',
             group_text_pers='j', group_texts_pers='j', group_texts_fam='j', group_alive='n', group_alive_date_act='j',
             group_alive_date='1920', group_death_date_act='j', group_death_date='1980',

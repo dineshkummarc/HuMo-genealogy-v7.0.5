@@ -103,6 +103,12 @@ class ChatGenealogyApiModel extends BaseModel
             return $this->getHelp();
         }
 
+        // *** Show person. This item should be last, otherwise "show manual" won't work ***
+        $howManyPhrase = strtolower(__('show'));
+        if (strpos($q, $howManyPhrase) !== false || strpos($q, 'show') !== false) {
+            return $this->getPerson($q);
+        }
+
         $text .= __('Sorry, I did not understand your question. Here are some examples of questions you can ask:') . "<br>\n";
 
         $text .= $this->getDefaultHelp();
@@ -246,7 +252,6 @@ class ChatGenealogyApiModel extends BaseModel
             $lines[] = __("Some persons could not be displayed due to privacy settings.");
         }
 
-        // Add text: Results are limited.
         if (count($results) == 50) {
             $lines[] = __("Results are limited.");
         }
@@ -264,9 +269,7 @@ class ChatGenealogyApiModel extends BaseModel
     {
         $text = '';
 
-        $stmt = $this->dbh->prepare(
-            "SELECT * FROM humo_trees WHERE tree_id = :tree_id"
-        );
+        $stmt = $this->dbh->prepare("SELECT * FROM humo_trees WHERE tree_id = :tree_id");
         $stmt->execute([':tree_id' => $this->tree_id]);
         $tmp = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -333,6 +336,77 @@ class ChatGenealogyApiModel extends BaseModel
         return $text;
     }
 
+    private function getPerson(string $question)
+    {
+        $text = '';
+
+        $q = mb_strtolower(trim($question));
+        $showPhrase = mb_strtolower(__('show'));
+        $token = preg_quote($showPhrase, '/');
+
+        if (!preg_match("/\\b{$token}\\b\\s+(.+)/u", $q, $m)) {
+            return __('Please specify a person. Example:') . ' "' . __('Show Jan Pietersen') . '"';
+        }
+
+        $namePart = trim($m[1]);
+        $namePart = rtrim($namePart, "?!.,;: ");
+
+        // Remove common words like "me", "person", etc.
+        $namePart = preg_replace('/\\b(me|person|the)\\b/i', '', $namePart);
+        $namePart = trim($namePart);
+
+        if ($namePart === '') {
+            return __('Please specify a person name. Example:') . ' "' . __('Show Jan Pietersen') . '"';
+        }
+
+        // Search for matching person(s)
+        $nameLike = '%' . mb_strtolower($namePart) . '%';
+        $stmt = $this->dbh->prepare(
+            "SELECT pers_id, pers_firstname, pers_lastname
+                 FROM humo_persons
+                 WHERE pers_tree_id = :tree_id
+                   AND (
+                     LOWER(CONCAT(COALESCE(pers_firstname,''),' ',COALESCE(pers_lastname,''))) LIKE :name
+                     OR LOWER(pers_lastname) LIKE :name
+                     OR LOWER(pers_firstname) LIKE :name
+                   )
+                 ORDER BY pers_lastname, pers_firstname
+                 LIMIT 50"
+        );
+        $stmt->execute([':tree_id' => $this->tree_id, ':name' => $nameLike]);
+        $persons = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (!$persons) {
+            return __('No person found matching:') . ' ' . htmlspecialchars($namePart, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+
+        $lines = [];
+        $this->privacy_persons = 0;
+
+        foreach ($persons as $person) {
+            $personData = $this->getPersonData($person['pers_id']);
+            if (!empty($personData)) {
+                $lines[] = "- " . $personData['name'] . ($personData['birth_date'] ? " {$personData['birth_date']}" : "");
+            }
+        }
+
+        if ($this->privacy_persons > 0) {
+            $lines[] = __("Some persons could not be displayed due to privacy settings.");
+        }
+
+        $text .= sprintf(
+            __("Found %d person(s) matching '%s':"),
+            count($lines),
+            htmlspecialchars($namePart, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+        );
+
+        if (count($persons) == 50) {
+            $lines[] = __("Results are limited.");
+        }
+
+        return $text . "<br>" . implode("<br>", $lines);
+    }
+
     private function findChildren(string $question): string
     {
         $lines = [];
@@ -363,7 +437,7 @@ class ChatGenealogyApiModel extends BaseModel
                      OR LOWER(pers_lastname) LIKE :name
                      OR LOWER(pers_firstname) LIKE :name
                    )
-                 LIMIT 10"
+                 LIMIT 20"
         );
         $stmt->execute([':tree_id' => $this->tree_id, ':name' => $nameLike]);
         $parents = $stmt->fetchAll(\PDO::FETCH_ASSOC);

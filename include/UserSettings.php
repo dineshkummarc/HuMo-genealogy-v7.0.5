@@ -62,7 +62,7 @@ class UserSettings
 
         $user['group_menu_cms'] = isset($groupDb->group_menu_cms) ? $groupDb->group_menu_cms : 'y';
 
-        $user['group_menu_chat'] = isset($groupDb->group_menu_chat) ? $groupDb->group_menu_chat : 'y';
+        $user['group_menu_chat'] = isset($groupDb->group_menu_chat) ? $groupDb->group_menu_chat : 'n';
 
         $user['group_menu_persons'] = isset($groupDb->group_menu_persons) ? $groupDb->group_menu_persons : 'j';
 
