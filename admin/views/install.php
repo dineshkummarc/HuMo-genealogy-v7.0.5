@@ -663,6 +663,7 @@ if (isset($_POST['install_tables2'])) {
                 relation_gedcomnumber VARCHAR(30) DEFAULT NULL,
                 person_id INT UNSIGNED NOT NULL,
                 person_gedcomnumber VARCHAR(30) DEFAULT NULL,
+                person_age VARCHAR(15) CHARACTER SET utf8,
                 tree_id SMALLINT(5) NOT NULL,
                 relation_type VARCHAR(20) DEFAULT NULL,
                 relation_order TINYINT UNSIGNED DEFAULT NULL,
