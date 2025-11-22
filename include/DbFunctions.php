@@ -640,6 +640,7 @@ class DbFunctions
      */
     public function get_family(string|null $fam_gedcomnumber, string $item = '')
     {
+        $family = null;
         try {
             // TODO: maybe not needed anymore, just use the base query with joins?
             if ($item == 'man-woman') {

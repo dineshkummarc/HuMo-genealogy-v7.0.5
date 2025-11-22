@@ -20,9 +20,9 @@ $orderChildren = new \Genealogy\Include\OrderChildren();
 
 // TODO: move code to model script.
 $relations = $db_functions->get_relations($person->pers_id);
-if ($relations) {
-    $familyDb = $db_functions->get_family($marriage);
+$familyDb = $db_functions->get_family($marriage);
 
+if ($familyDb) {
     $fam_kind = $familyDb->fam_kind;
     $man_gedcomnumber = $familyDb->partner1_gedcomnumber;
     $woman_gedcomnumber = $familyDb->partner2_gedcomnumber;
@@ -130,7 +130,8 @@ if ($person->pers_sexe == 'M') {
         $fam_count = count($relation_gedcomnumber);
         if ($fam_count > 0) {
     ?>
-            <ul id="sortable<?= $i; ?>" class="sortable-relations sortable-pages list-group ui-sortable" data-family-id="<?= $familyDb->fam_id; ?>">
+            <ul id="sortable<?= $i; ?>" class="sortable-relations sortable-pages list-group ui-sortable" data-family-id="<?= isset($familyDb->fam_id) ? $familyDb->fam_id : ''; ?>">
+
                 <?php
                 for ($i = 0; $i < $fam_count; $i++) {
                     $qry = "SELECT f.*,
@@ -144,13 +145,13 @@ if ($person->pers_sexe == 'M') {
                         LEFT JOIN humo_relations_persons man_rel ON man_rel.relation_id = f.fam_id AND man_rel.relation_type = 'partner' AND man_rel.partner_order = 1
                         LEFT JOIN humo_relations_persons woman_rel ON woman_rel.relation_id = f.fam_id AND woman_rel.relation_type = 'partner' AND woman_rel.partner_order = 2
                         WHERE f.fam_id='" . $relation_id[$i] . "'";
-                    $family = $dbh->query($qry);
-                    $familyDb = $family->fetch(PDO::FETCH_OBJ);
+                    $relation = $dbh->query($qry);
+                    $relationDb = $relation->fetch(PDO::FETCH_OBJ);
 
                     // *** Highlight selected relation if there are multiple relations ***
                     $line_selected = '';
                     $button_selected = 'btn-secondary';
-                    if ($fam_count > 1 and $familyDb->fam_gedcomnumber == $marriage) {
+                    if ($fam_count > 1 and $relationDb->fam_gedcomnumber == $marriage) {
                         $line_selected = 'list-group-item-secondary';
                         $button_selected = 'btn-primary';
                     }
@@ -171,7 +172,7 @@ if ($person->pers_sexe == 'M') {
                             <div class="col-2">
                                 <?php if ($fam_count > 1) { ?>
                                     <form method="POST" action="index.php?page=editor&amp;menu_tab=marriage">
-                                        <input type="hidden" name="marriage_nr" value="<?= $familyDb->fam_gedcomnumber; ?>">
+                                        <input type="hidden" name="marriage_nr" value="<?= $relationDb->fam_gedcomnumber; ?>">
                                         <input type="submit" name="dummy3" value="<?= __('Family'); ?>" class="btn btn-sm <?= $button_selected; ?>">
                                     </form>
                                 <?php } else { ?>
@@ -180,10 +181,10 @@ if ($person->pers_sexe == 'M') {
                             </div>
 
                             <div class="col-9">
-                                <b><?= show_person_with_id($familyDb->partner1_id) . ' ' . __('and') . ' ' . show_person_with_id($familyDb->partner2_id); ?></b>
+                                <b><?= show_person_with_id($relationDb->partner1_id) . ' ' . __('and') . ' ' . show_person_with_id($relationDb->partner2_id); ?></b>
                                 <?php
-                                if ($familyDb->fam_marr_date) {
-                                    echo ' X ' . $datePlace->date_place($familyDb->fam_marr_date, '');
+                                if ($relationDb->fam_marr_date) {
+                                    echo ' X ' . $datePlace->date_place($relationDb->fam_marr_date, '');
                                 }
                                 ?>
                             </div>

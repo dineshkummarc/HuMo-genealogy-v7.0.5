@@ -144,10 +144,12 @@ class EditorModel extends AdminBaseModel
                 // *** Person don't exist (anymore)! ***
                 if (!isset($this->person->pers_gedcomnumber)) {
                     $this->pers_gedcomnumber = '';
+                    $this->person = null; // *** Add this line to prevent null property access ***
                 }
             } else {
                 // *** Non valid GEDCOM number, now reset GEDCOM number ***
                 $this->pers_gedcomnumber = '';
+                $this->person = null; // *** Add this line to prevent null property access ***
             }
             $_SESSION['admin_pers_gedcomnumber'] = $this->pers_gedcomnumber;
 
@@ -222,6 +224,10 @@ class EditorModel extends AdminBaseModel
         // *** Child is added, show marriage page ***
         if (isset($_POST['child_connect'])) {
             $this->marriage = $_POST['marriage_nr'];
+        }
+
+        if ($this->person === null) {
+            return;
         }
 
         $relations = $this->db_functions->get_relations($this->person->pers_id);
@@ -1333,9 +1339,16 @@ class EditorModel extends AdminBaseModel
 
             // *** If this relation is removed, show 1st relation of person, or link to new relation ***
             $relation = $this->db_functions->get_first_relation($this->person->pers_id);
-            $marriage = $relation->relation_gedcomnumber;
-            $_POST["marriage_nr"] = $marriage;
-            $_SESSION['admin_fam_gedcomnumber'] = $marriage;
+            if ($relation && isset($relation->relation_gedcomnumber)) {
+                $marriage = $relation->relation_gedcomnumber;
+                $_POST["marriage_nr"] = $marriage;
+                $_SESSION['admin_fam_gedcomnumber'] = $marriage;
+            } else {
+                // *** No relations found, clear relation session ***
+                $marriage = '';
+                unset($_POST["marriage_nr"]);
+                unset($_SESSION['admin_fam_gedcomnumber']);
+            }
         }
 
         // *** Add NEW parents to a child ***
