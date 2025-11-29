@@ -169,8 +169,11 @@ if ($humo_option["url_rewrite"] == "j") {
                     }
 
                     // *** Show texts from connected objects (where object is saved in seperate table): Family Tree Maker GEDCOM file ***
-                    $picture_qry = $dbh->query("SELECT * FROM humo_events
-                        WHERE event_tree_id='" . $tree_id . "' AND event_kind='object' AND LOWER(event_event)='" . strtolower($filename) . "'");
+                    $picture_qry = $dbh->query("SELECT e.*, l.location_location AS event_place 
+                        FROM humo_events e
+                        LEFT JOIN humo_location l ON e.place_id = l.location_id
+                        WHERE e.event_tree_id='" . $tree_id . "' AND e.event_kind='object' AND LOWER(e.event_event)='" . strtolower($filename) . "'");
+
                     while ($pictureDb = $picture_qry->fetch(PDO::FETCH_OBJ)) {
                         $connect_qry = $dbh->query("SELECT * FROM humo_connections WHERE connect_tree_id='" . $tree_id . "'
                             AND connect_sub_kind='pers_object' AND connect_source_id='" . $pictureDb->event_gedcomnr . "'");

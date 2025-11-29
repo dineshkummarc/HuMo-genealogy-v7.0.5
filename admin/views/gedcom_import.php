@@ -2201,17 +2201,17 @@ elseif ($trees['step'] == '4') {
 
             // *** Replace familynumber with person number ***
             if ($new_nr->partner1_gedcomnumber) {
-                $dbh->query("UPDATE humo_events SET event_event='" . $new_nr->partner1_id . "' WHERE event_id='" . $famc_adoptiveDb->event_id . "'");
+                $dbh->query("UPDATE humo_events SET event_event='" . $new_nr->partner1_gedcomnumber . "' WHERE event_id='" . $famc_adoptiveDb->event_id . "'");
                 $personnr = $new_nr->partner1_id;
             }
             if ($new_nr->partner2_gedcomnumber) {
-                $dbh->query("UPDATE humo_events SET event_event='" . $new_nr->partner2_id . "' WHERE event_id='" . $famc_adoptiveDb->event_id . "'");
+                $dbh->query("UPDATE humo_events SET event_event='" . $new_nr->partner2_gedcomnumber . "' WHERE event_id='" . $famc_adoptiveDb->event_id . "'");
                 $personnr = $new_nr->partner2_id;
             }
 
             if ($new_nr->partner1_id || $new_nr->partner2_id) {
                 // Remove relation entry created for the fictive family number
-                $stmt = $dbh->prepare("DELETE FROM humo_relations WHERE tree_id = :tree_id AND relation_gedcomnumber = :fam");
+                $stmt = $dbh->prepare("DELETE FROM humo_relations_persons WHERE tree_id = :tree_id AND relation_gedcomnumber = :fam");
                 $stmt->execute([':tree_id' => $trees['tree_id'], ':fam' => $fam]);
             }
 
