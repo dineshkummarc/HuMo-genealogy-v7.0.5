@@ -552,6 +552,28 @@ elseif ($trees['step'] == '2') {
         // *** Reset nr of persons and families ***
         $sql = $dbh->query("UPDATE humo_trees SET tree_persons='', tree_families='' WHERE tree_prefix='" . $tree_prefix . "'");
     }
+
+    // *** Create temporary table here to process GEDCOM numbers for children and relations *** 
+    $tableCheck = $dbh->query("SHOW TABLES LIKE 'humo_temp_relations_persons'");
+    if ($tableCheck->rowCount() > 0) {
+        // *** Previous temp. table wasn't removed ***
+        $dbh->exec("DROP TABLE humo_temp_relations_persons");
+    }
+    $dbh->exec("
+        CREATE TABLE humo_temp_relations_persons (
+            id INT UNSIGNED AUTO_INCREMENT,
+            relation_id INT UNSIGNED NOT NULL,
+            relation_gedcomnumber VARCHAR(30) DEFAULT NULL,
+            person_id INT UNSIGNED NOT NULL,
+            person_gedcomnumber VARCHAR(30) DEFAULT NULL,
+            person_age VARCHAR(15) CHARACTER SET utf8,
+            tree_id SMALLINT(5) NOT NULL,
+            relation_type VARCHAR(20) DEFAULT NULL,
+            relation_order TINYINT UNSIGNED DEFAULT NULL,
+            partner_order TINYINT UNSIGNED DEFAULT NULL,
+            PRIMARY KEY (id)
+        );
+    ");
     ?>
 
     <br><br>
@@ -859,30 +881,6 @@ elseif ($trees['step'] == '3') {
 
         return $buffer;
     }
-
-
-    // *** Create temporary table here to process GEDCOM numbers for children and relations ***
-    $tableCheck = $dbh->query("SHOW TABLES LIKE 'humo_temp_relations_persons'");
-    if ($tableCheck->rowCount() > 0) {
-        // *** Previous temp. table wasn't removed ***
-        $dbh->exec("DROP TABLE humo_temp_relations_persons");
-    }
-    $dbh->exec("
-        CREATE TABLE humo_temp_relations_persons (
-            id INT UNSIGNED AUTO_INCREMENT,
-            relation_id INT UNSIGNED NOT NULL,
-            relation_gedcomnumber VARCHAR(30) DEFAULT NULL,
-            person_id INT UNSIGNED NOT NULL,
-            person_gedcomnumber VARCHAR(30) DEFAULT NULL,
-            person_age VARCHAR(15) CHARACTER SET utf8,
-            tree_id SMALLINT(5) NOT NULL,
-            relation_type VARCHAR(20) DEFAULT NULL,
-            relation_order TINYINT UNSIGNED DEFAULT NULL,
-            partner_order TINYINT UNSIGNED DEFAULT NULL,
-            PRIMARY KEY (id)
-        );
-    ");
-
 
     // TEST: lock tables. Unfortunately not much faster than usual... ONLY FOR MYISAM TABLES!
     /*
