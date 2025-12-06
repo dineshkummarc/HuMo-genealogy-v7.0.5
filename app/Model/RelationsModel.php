@@ -3438,7 +3438,7 @@ class RelationsModel extends BaseModel
         $personName = new PersonName();
         $privacy = new PersonPrivacy();
 
-        if (isset($relation)) {
+        if (isset($this->relation)) {
             foreach ($this->relations1 as $relation) {
                 $familyDb = $this->db_functions->get_family_with_id($relation->relation_id, 'man-woman');
                 $thespouse = $this->relation['sexe1'] == 'F' ? $familyDb->partner1_gedcomnumber : $familyDb->partner2_gedcomnumber;
@@ -3751,7 +3751,7 @@ class RelationsModel extends BaseModel
                     if ($refer === "fst" && $_SESSION['couple'] == $relation->relation_gedcomnumber) {
                         continue;
                     }
-                    $famsDb = $this->db_functions->get_family($relation);
+                    $famsDb = $this->db_functions->get_family_with_id($relation->relation_id);
                     if ($refer === "chd" && $famsDb->partner2_gedcomnumber == $persDb->pers_gedcomnumber && isset($famsDb->partner1_gedcomnumber) && $famsDb->partner1_gedcomnumber != "" && $famsDb->fam_gedcomnumber == $callarray[1]) {
                         continue;
                     }
@@ -3789,7 +3789,7 @@ class RelationsModel extends BaseModel
                     if ($refer === "fst" && $_SESSION['couple'] == $relation->relation_gedcomnumber) {
                         continue;
                     }
-                    $famsDb = $this->db_functions->get_family($relation->relation_gedcomnumber);
+                    $famsDb = $this->db_functions->get_family_with_id($relation->relation_id);
                     if ($famsDb->partner1_gedcomnumber == $persDb->pers_gedcomnumber) {
                         if (isset($famsDb->partner2_gedcomnumber) && $famsDb->partner2_gedcomnumber != "" && $famsDb->partner2_gedcomnumber != "0") {
                             $var4 = strpos($_SESSION['next_path'], $famsDb->partner2_gedcomnumber . "@");
