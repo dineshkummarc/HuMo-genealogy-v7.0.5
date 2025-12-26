@@ -361,8 +361,6 @@ lightbox.on('slide_removed', (index) => {
 
 GLightbox includes "[Plyr](https://plyr.io/)" the best player out there, you can pass any Plyr option to the player, view all available options here [Plyr options](https://github.com/sampotts/plyr). GLightbox will only inject the player library if required and only when the lightbox is opened.
 
-**Internet Explorer 11. If you need support for this browser you need to set the js url to use the polyfilled version. This is not the default because IE11 is ancient and we need to let it die.**
-
 ### Autoplay for mobile/tablet
 
 Please note, autoplay is blocked in some browsers, there’s nothing we can do to change that unfortunately, the browser will decide if your video can be autoplayed. Please do not post issues about this, instead inform yourself about this topic:
@@ -370,14 +368,6 @@ Please note, autoplay is blocked in some browsers, there’s nothing we can do t
 - [https://webkit.org/blog/6784/new-video-policies-for-ios/](https://webkit.org/blog/6784/new-video-policies-for-ios/)
 - [https://developers.google.com/web/updates/2017/09/autoplay-policy-changes](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes)
 - [https://hacks.mozilla.org/2019/02/firefox-66-to-block-automatically-playing-audible-video-and-audio/](https://hacks.mozilla.org/2019/02/firefox-66-to-block-automatically-playing-audible-video-and-audio/)
-
-they decide if a video can be autoplayed based in a few rules
-
-```
-plyr: {
-    js: 'https://cdn.plyr.io/3.6.2/plyr.polyfilled.js',
-    ....
-```
 
 ```javascript
 const lightbox = GLightbox({
