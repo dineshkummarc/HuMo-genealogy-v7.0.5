@@ -216,7 +216,7 @@ if ($humo_option["url_rewrite"] == "j") {
                     if (array_key_exists(substr($filename, 0, 3), $showMedia->get_pcat_dirs())) {
                         $tmp_dir .= substr($filename, 0, 2) . '/';
                     }
-                    if (in_array(strtolower(pathinfo($filename, PATHINFO_EXTENSION)), array('jpeg', 'jpg', 'png', 'gif', 'bmp', 'tif'))) {
+                    if (in_array(strtolower(pathinfo($filename, PATHINFO_EXTENSION)), array('jpeg', 'jpg', 'png', 'gif', 'bmp', 'tif', 'avif'))) {
                         $href_path = $mediaPath->give_media_path($tmp_dir, $filename);
             ?>
 
