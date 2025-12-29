@@ -405,11 +405,6 @@ class GeneralSettings
             $dbh->query("INSERT INTO humo_settings SET setting_variable='debug_admin_pages', setting_value='n'");
         }
 
-        if (!isset($humo_option["debug_show_deprecated"])) {
-            $humo_option["debug_show_deprecated"] = 'n';
-            $dbh->query("INSERT INTO humo_settings SET setting_variable='debug_show_deprecated', setting_value='n'");
-        }
-
         if (!isset($humo_option["hide_languages"])) {
             $humo_option["hide_languages"] = '';
             $dbh->query("INSERT INTO humo_settings SET setting_variable='hide_languages', setting_value=''");

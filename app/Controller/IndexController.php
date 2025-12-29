@@ -22,11 +22,7 @@ class IndexController
 
         // *** Debug HuMo-genealogy front pages ***
         if ($humo_option["debug_front_pages"] == 'y') {
-            if ($humo_option["debug_show_deprecated"] == 'n') {
-                error_reporting(E_ALL & ~E_DEPRECATED);
-            } else {
-                error_reporting(E_ALL);
-            }
+            error_reporting(E_ALL);
             ini_set('display_errors', 1);
         }
 
