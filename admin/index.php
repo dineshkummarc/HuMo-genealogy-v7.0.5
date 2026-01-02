@@ -12,10 +12,9 @@
  *
  * ----------
  *
- * Copyright (C) 2008-2025 Huub Mons,
+ * Copyright (C) 2008-2026 Huub Mons,
  * Klaas de Winkel, Jan Maat, Jeroen Beemster, Louis Ywema, Theo Huitema,
- * René Janssen, Yossi Beck
- * and others.
+ * René Janssen, Yossi Beck and others.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
