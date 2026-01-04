@@ -177,7 +177,7 @@ $user = $dbh->query($usersql);
             <td></td>
             <td><input type="text" name="add_username" size="15" class="form-control form-control-sm"></td>
             <td><input type="text" name="add_usermail" size="20" class="form-control form-control-sm"></td>
-            <td><input type="password" name="add_password" size="15" class="form-control form-control-sm"></td>
+            <td><input type="password" name="add_password" size="15" minlength="10" class="form-control form-control-sm"></td>
             <td>
                 <!-- Select group for new user, default=family group. -->
                 <select size="1" name="add_group_id" class="form-select form-select-sm">
