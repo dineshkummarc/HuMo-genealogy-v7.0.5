@@ -11,7 +11,6 @@ $select_trees = $list["select_trees"];
 $selection = $list["selection"];
 $start = $list["start"];
 
-
 $list_var = $processLinks->get_link($uri_path, 'list', $tree_id, false);
 $list_var2 = $processLinks->get_link($uri_path, 'list', $tree_id, true);
 
@@ -286,18 +285,6 @@ if ($list["index_list"] == 'standard' || $list["index_list"] == 'search' || $lis
                     </div>
                 </div>
 
-                <!--
-                <div class="accordion mx-4 mb-2" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                <?= __('Advanced search'); ?>
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse">
-                            <div class="accordion-body genealogy_search">
-                    -->
-
                 <div class="row ms-md-1">
                     <!-- Research status -->
                     <div class="col-sm-3 <?= $selection['parent_status'] != '' && $selection['parent_status'] != 'allpersons' ? ' bg-primary-subtle' : ''; ?>">
@@ -428,13 +415,6 @@ if ($list["index_list"] == 'standard' || $list["index_list"] == 'search' || $lis
                     </div>
 
                 </div>
-
-                <!--
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                -->
 
                 <div class="row mb-3 ms-md-1">
                     <?php if ($num_rows2 > 1 && $humo_option['one_name_study'] == 'n') { ?>
@@ -770,8 +750,7 @@ $selected_place = '';
                 // *** Search all persons with a spouse IN the same tree as the 1st person ***
                 $spouse_qry = "SELECT * FROM humo_persons WHERE";
                 if ($user['group_kindindex'] == "j") {
-                    $spouse_qry = "SELECT *, CONCAT(pers_prefix,pers_lastname,pers_firstname) as concat_name
-                        FROM humo_persons WHERE";
+                    $spouse_qry = "SELECT *, CONCAT(pers_prefix,pers_lastname,pers_firstname) as concat_name FROM humo_persons WHERE";
                 }
                 if ($personDb->pers_id == $famDb->partner1_id) {
                     $spouse_qry .= ' pers_id="' . $famDb->partner2_id . '"';
@@ -937,14 +916,13 @@ $selected_place = '';
                             <?= $directionMarkers->dirmark1; ?>
 
                             <?php
-                            // *** Show picture man or wife ***
-                            if ($personDb->pers_sexe == "M") {
-                                echo ' <img src="images/man.gif" alt="man">';
-                            } elseif ($personDb->pers_sexe == "F") {
-                                echo ' <img src="images/woman.gif" alt="woman">';
-                            } else {
-                                echo ' <img src="images/unknown.gif" alt="unknown">';
-                            }
+                            // *** Show person icon based on gender ***
+                            $genderIcon = match ($personDb->pers_sexe) {
+                                "M" => '<img src="images/man.gif" alt="man">',
+                                "F" => '<img src="images/woman.gif" alt="woman">',
+                                default => '<img src="images/unknown.gif" alt="unknown">'
+                            };
+                            echo ' ' . $genderIcon;
 
                             if ($humo_option['david_stars'] == "y") {
                                 $camps = "Auschwitz|Oświęcim|Sobibor|Bergen-Belsen|Bergen Belsen|Treblinka|Holocaust|Shoah|Midden-Europa|Majdanek|Belzec|Chelmno|Dachau|Buchenwald|Sachsenhausen|Mauthausen|Theresienstadt|Birkenau|Kdo |Kamp Amersfoort|Gross-Rosen|Gross Rosen|Neuengamme|Ravensbrück|Kamp Westerbork|Kamp Vught|Kommando Sosnowice|Ellrich|Schöppenitz|Midden Europa|Lublin|Tröbitz|Kdo Bobrek|Golleschau|Blechhammer|Kdo Gleiwitz|Warschau|Szezdrzyk|Polen|Kamp Bobrek|Monowitz|Dorohucza|Seibersdorf|Babice|Fürstengrube|Janina|Jawischowitz|Katowice|Kaufering|Krenau|Langenstein|Lodz|Ludwigsdorf|Melk|Mühlenberg|Oranienburg|Sakrau|Schwarzheide|Spytkowice|Stutthof|Tschechowitz|Weimar|Wüstegiersdorf|Oberhausen|Minsk|Ghetto Riga|Ghetto Lodz|Flossenbürg|Malapane";
@@ -978,6 +956,7 @@ $selected_place = '';
                             }
                             ?>
                         </td>
+
                         <td style="border-left:0px;">
                             <?php
                             // *** Show name of person ***
@@ -1030,21 +1009,20 @@ $selected_place = '';
                                     }
                                     echo ' <span class="index_partner">';
                                     if ($nr_marriages > 1) {
-                                        if ($x == 0) {
-                                            echo __('1st');
-                                        } elseif ($x == 1) {
-                                            echo __('2nd');
-                                        } elseif ($x == 2) {
-                                            echo __('3rd');
-                                        } elseif ($x > 2) {
-                                            echo ($x + 1) . __('th');
-                                        }
+                                        $ordinal = match ($x) {
+                                            1 => __('1st'),
+                                            2 => __('2nd'),
+                                            3 => __('3rd'),
+                                            default => $x . __('th')
+                                        };
+                                        echo $ordinal;
                                     }
                                     echo ' ' . $relation_short . ' ' . rtrim($name["standard_name"]) . '</span>';
                                 }
                             }
                             ?>
                         </td>
+
                         <td style="white-space:nowrap;">
                             <?php
                             $info = '';
@@ -1060,6 +1038,7 @@ $selected_place = '';
                             ?>
                             <?= $info; ?>
                         </td>
+
                         <td>
                             <?php
                             $info = '';
@@ -1075,6 +1054,7 @@ $selected_place = '';
                             ?>
                             <?= $info; ?>
                         </td>
+
                         <td style="white-space:nowrap;">
                             <?php
                             $info = '';
@@ -1090,6 +1070,7 @@ $selected_place = '';
                             ?>
                             <?= $info; ?>
                         </td>
+
                         <td>
                             <?php
                             $info = '';
