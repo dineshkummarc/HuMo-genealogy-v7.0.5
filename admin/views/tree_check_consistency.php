@@ -373,6 +373,8 @@ if (isset($_POST['mark_all'])) {
             $sib_b_date = ''; // previous sibling birth date
             $m_fams = ''; // marriage(s) of mother (to find previous sibling)
             $m_fams_arr = array(); // marriage(s) array of mother (to find previous sibling)
+            $ch_array = array(); // reset children list per person
+            $prev_ch_arr = array(); // reset previous marriage children per person
 
             if (isset($personDb->parent_relation_id)) {
                 $parentsDb = $db_functions->get_family_with_id($personDb->parent_relation_id);
@@ -408,20 +410,22 @@ if (isset($_POST['mark_all'])) {
                         $f_b_date = $fatherDb->pers_birth_date;
                     }
                 }
-                //NEW - find previous born sibling
+                // Find previous born sibling
                 $children = $db_functions->get_children($parentsDb->fam_id);
                 // TODO refactor
-                foreach ($children as $child) {
-                    $ch_array[] = $child->person_gedcomnumber;
+                if ($children !== false) {
+                    foreach ($children as $child) {
+                        $ch_array[] = $child->person_gedcomnumber;
+                    }
                 }
-                if (isset($ch_array)) {
+                if (!empty($ch_array)) {
                     $num_ch = count($ch_array); // number of children
                     $first_ch = 0;
                     if ($num_ch > 1) {
                         // more than 1 children
-                        $count = 0;
-                        while ($ch_array[$count] != $personDb->pers_gedcomnumber) {
-                            $count++;
+                        $count = array_search($personDb->pers_gedcomnumber, $ch_array, true);
+                        if ($count === false) {
+                            $count = 0; // child not found; treat as first to avoid false positives
                         }
                         if ($count > 0) {
                             // person is not first child
@@ -436,6 +440,7 @@ if (isset($_POST['mark_all'])) {
                             $first_ch = 1; // this is first child in own fam
                         }
                     }
+
                     // if this only or first child in this marriage - look for previous marriage of mother
                     if (($num_ch == 1 or $first_ch == 1) && (isset($m_fams_arr) && count($m_fams_arr) > 1 && $m_fams_arr[0] != $parentsDb->fam_gedcomnumber)) {
                         // if mother has more than one marriage and this is not the first, then look for last child in previous marriage
@@ -443,21 +448,23 @@ if (isset($_POST['mark_all'])) {
                         while ($m_fams_arr[$count] != $parentsDb->fam_gedcomnumber) {
                             $count++;
                         }
-                        $prev_marr_ged = $m_fams_arr[$count - 1];
-                        $prev_marrDb = $db_functions->get_family($prev_marr_ged);
-                        $children = $db_functions->get_children($prev_marrDb->fam_id);
-                        if ($children !== false) {
-                            foreach ($children as $child) {
-                                $prev_ch_arr[] = $child->person_gedcomnumber;
+                        if ($count > 0) {
+                            $prev_marr_ged = $m_fams_arr[$count - 1];
+                            $prev_marrDb = $db_functions->get_family($prev_marr_ged);
+                            $children = $db_functions->get_children($prev_marrDb->fam_id);
+                            if ($children !== false) {
+                                foreach ($children as $child) {
+                                    $prev_ch_arr[] = $child->person_gedcomnumber;
+                                }
                             }
-                        }
-                        if (isset($prev_ch_arr)) {
-                            $prev_ch_num = count($prev_ch_arr);
-                            $prev_ch_ged = $prev_ch_arr[$prev_ch_num - 1]; // last child
+                            if (!empty($prev_ch_arr)) {
+                                $prev_ch_num = count($prev_ch_arr);
+                                $prev_ch_ged = $prev_ch_arr[$prev_ch_num - 1]; // last child
 
-                            $sibDb = $db_functions->get_person($prev_ch_ged);
-                            if (isset($sibDb->pers_birth_date) && $sibDb->pers_birth_date != '') {
-                                $sib_b_date = $sibDb->pers_birth_date;
+                                $sibDb = $db_functions->get_person($prev_ch_ged);
+                                if (isset($sibDb->pers_birth_date) && $sibDb->pers_birth_date != '') {
+                                    $sib_b_date = $sibDb->pers_birth_date;
+                                }
                             }
                         }
                     }
