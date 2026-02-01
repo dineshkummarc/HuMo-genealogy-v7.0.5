@@ -2,6 +2,9 @@
 $botDetector = new Genealogy\Include\BotDetector();
 
 $treetext = $showTreeText->show_tree_text($selectedFamilyTree->tree_id, $selected_language);
+
+// *** Generate unique ID suffix to avoid duplicate IDs when this file is included multiple times ***
+$id_suffix = '_' . uniqid();
 ?>
 
 <tr class="table-secondary">
@@ -41,9 +44,18 @@ $treetext = $showTreeText->show_tree_text($selectedFamilyTree->tree_id, $selecte
                     <li>
                         <!-- Compact / Expanded view buttons -->
                         <b><?= __('Family Page'); ?></b><br>
-                        <input type="radio" name="keuze0" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=compact<?= $desc_rep; ?>&xx='+this.value" <?= $data["family_expanded"] == 'compact' ? 'checked' : ''; ?>> <?= __('Compact view'); ?><br>
-                        <input type="radio" name="keuze0" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=expanded1<?= $desc_rep; ?>&xx='+this.value" <?= $data["family_expanded"] == 'expanded1' ? 'checked' : ''; ?>> <?= __('Expanded view'); ?> 1<br>
-                        <input type="radio" name="keuze0" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=expanded2<?= $desc_rep; ?>&xx='+this.value" <?= $data["family_expanded"] == 'expanded2' ? 'checked' : ''; ?>> <?= __('Expanded view'); ?> 2<br>
+                        <div class="form-check">
+                            <input type="radio" name="family_expanded<?= $id_suffix; ?>" value="compact" class="form-check-input" id="fam_compact<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=compact<?= $desc_rep; ?>'" <?= $data["family_expanded"] == 'compact' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="fam_compact<?= $id_suffix; ?>"><?= __('Compact view'); ?></label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="family_expanded<?= $id_suffix; ?>" value="expanded1" class="form-check-input" id="fam_expanded1<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=expanded1<?= $desc_rep; ?>'" <?= $data["family_expanded"] == 'expanded1' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="fam_expanded1<?= $id_suffix; ?>"><?= __("Expanded view"); ?> 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="family_expanded<?= $id_suffix; ?>" value="expanded2" class="form-check-input" id="fam_expanded2<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>family_expanded=expanded2<?= $desc_rep; ?>'" <?= $data["family_expanded"] == 'expanded2' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="fam_expanded2<?= $id_suffix; ?>"><?= __("Expanded view"); ?> 2</label>
+                        </div>
                     </li>
 
                     <!-- Select source presentation (as title/ footnote or hide sources) -->
@@ -51,9 +63,18 @@ $treetext = $showTreeText->show_tree_text($selectedFamilyTree->tree_id, $selecte
                         <li>&nbsp;</li>
                         <li>
                             <b><?= __('Sources'); ?></b><br>
-                            <input type="radio" name="keuze1" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=title<?= $desc_rep; ?>&xx='+this.value" <?= $data["source_presentation"] == 'title' ? 'checked' : ''; ?>> <?= __('Show source'); ?><br>
-                            <input type="radio" name="keuze1" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=footnote<?= $desc_rep; ?>&xx='+this.value" <?= $data["source_presentation"] == 'footnote' ? 'checked' : ''; ?>> <?= __('Show source as footnote'); ?><br>
-                            <input type="radio" name="keuze1" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=hide<?= $desc_rep; ?>&xx='+this.value" <?= $data["source_presentation"] == 'hide' ? 'checked' : ''; ?>> <?= __('Hide sources'); ?><br>
+                            <div class="form-check">
+                                <input type="radio" name="source_presentation<?= $id_suffix; ?>" value="title" class="form-check-input" id="src_title<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=title<?= $desc_rep; ?>'" <?= $data["source_presentation"] == 'title' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="src_title<?= $id_suffix; ?>"><?= __("Show source"); ?></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="source_presentation<?= $id_suffix; ?>" value="footnote" class="form-check-input" id="src_footnote<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=footnote<?= $desc_rep; ?>'" <?= $data["source_presentation"] == 'footnote' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="src_footnote<?= $id_suffix; ?>"><?= __("Show source as footnote"); ?></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="source_presentation<?= $id_suffix; ?>" value="hide" class="form-check-input" id="src_hide<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>source_presentation=hide<?= $desc_rep; ?>'" <?= $data["source_presentation"] == 'hide' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="src_hide<?= $id_suffix; ?>"><?= __("Hide sources"); ?></label>
+                            </div>
                         </li>
                     <?php
                     }
@@ -70,8 +91,14 @@ $treetext = $showTreeText->show_tree_text($selectedFamilyTree->tree_id, $selecte
                             //if ($temp->rowCount()) {
                             ?>
                             <b><?= __('Family map'); ?></b><br>
-                            <input type="radio" name="keuze2" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>maps_presentation=show&xx='+this.value" <?= $data["maps_presentation"] == 'show' ? 'checked' : ''; ?>> <?= __('Show family map'); ?><br>
-                            <input type="radio" name="keuze2" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>maps_presentation=hide&xx='+this.value" <?= $data["maps_presentation"] == 'hide' ? 'checked' : ''; ?>> <?= __('Hide family map'); ?><br>
+                            <div class="form-check">
+                                <input type="radio" name="maps_presentation<?= $id_suffix; ?>" value="show" class="form-check-input" id="map_show<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>maps_presentation=show'" <?= $data["maps_presentation"] == 'show' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="map_show<?= $id_suffix; ?>"><?= __("Show family map"); ?></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="maps_presentation<?= $id_suffix; ?>" value="hide" class="form-check-input" id="map_hide<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>maps_presentation=hide'" <?= $data["maps_presentation"] == 'hide' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="map_hide<?= $id_suffix; ?>"><?= __("Hide family map"); ?></label>
+                            </div>
                             <?php
                             //}
                             ?>
@@ -82,17 +109,32 @@ $treetext = $showTreeText->show_tree_text($selectedFamilyTree->tree_id, $selecte
                         <li>&nbsp;</li>
                         <li>
                             <b><?= __('Pictures'); ?></b><br>
-                            <input type="radio" name="keuze3" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>picture_presentation=show<?= $desc_rep; ?>&xx='+this.value" <?= $data["picture_presentation"] == 'show' ? 'checked' : ''; ?>> <?= __('Show pictures'); ?><br>
-                            <input type="radio" name="keuze3" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>picture_presentation=hide<?= $desc_rep; ?>&xx='+this.value" <?= $data["picture_presentation"] == 'hide' ? 'checked' : ''; ?>> <?= __('Hide pictures'); ?><br>
+                            <div class="form-check">
+                                <input type="radio" name="picture_presentation<?= $id_suffix; ?>" value="show" class="form-check-input" id="pic_show<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>picture_presentation=show<?= $desc_rep; ?>'" <?= $data["picture_presentation"] == 'show' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="pic_show<?= $id_suffix; ?>"><?= __("Show pictures"); ?></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" name="picture_presentation<?= $id_suffix; ?>" value="hide" class="form-check-input" id="pic_hide<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>picture_presentation=hide<?= $desc_rep; ?>'" <?= $data["picture_presentation"] == 'hide' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="pic_hide<?= $id_suffix; ?>"><?= __("Hide pictures"); ?></label>
+                            </div>
                         </li>
                     <?php } ?>
 
                     <li>&nbsp;</li>
                     <li>
                         <b><?= __('Texts'); ?></b><br>
-                        <input type="radio" name="keuze4" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=show<?= $desc_rep; ?>&xx='+this.value" <?= $data["text_presentation"] == 'show' ? 'checked' : ''; ?>> <?= __('Show texts'); ?><br>
-                        <input type="radio" name="keuze4" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=popup<?= $desc_rep; ?>&xx='+this.value" <?= $data["text_presentation"] == 'popup' ? 'checked' : ''; ?>> <?= __('Show texts in popup screen'); ?><br>
-                        <input type="radio" name="keuze4" value="" class="form-check-input" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=hide<?= $desc_rep; ?>&xx='+this.value" <?= $data["text_presentation"] == 'hide' ? 'checked' : ''; ?>> <?= __('Hide texts'); ?><br>
+                        <div class="form-check">
+                            <input type="radio" name="text_presentation<?= $id_suffix; ?>" value="show" class="form-check-input" id="txt_show<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=show<?= $desc_rep; ?>'" <?= $data["text_presentation"] == 'show' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="txt_show<?= $id_suffix; ?>"><?= __("Show texts"); ?></label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="text_presentation<?= $id_suffix; ?>" value="popup" class="form-check-input" id="txt_popup<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=popup<?= $desc_rep; ?>'" <?= $data["text_presentation"] == 'popup' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="txt_popup<?= $id_suffix; ?>"><?= __("Show texts in popup screen"); ?></label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="text_presentation<?= $id_suffix; ?>" value="hide" class="form-check-input" id="txt_hide<?= $id_suffix; ?>" onclick="javascript: document.location.href='<?= $settings_url . $url_add; ?>text_presentation=hide<?= $desc_rep; ?>'" <?= $data["text_presentation"] == 'hide' ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="txt_hide<?= $id_suffix; ?>"><?= __("Hide texts"); ?></label>
+                        </div>
                     </li>
                 </ul>
             </div>
