@@ -3261,7 +3261,6 @@ class EditorModel extends AdminBaseModel
          */
 
         // *** Add new person-address connection ***
-        //if (isset($_GET['person_place_address']) AND isset($_GET['address_add'])){
         if (isset($_POST['person_add_address'])) {
             $_POST['connect_add'] = 'add_address';
             $_POST['connect_kind'] = 'person';
@@ -3269,7 +3268,6 @@ class EditorModel extends AdminBaseModel
             $_POST["connect_connect_id"] = $this->pers_gedcomnumber;
         }
         // *** Add new family-address connection ***
-        //if (isset($_GET['family_place_address']) AND isset($_GET['address_add'])){
         if (isset($_POST['relation_add_address'])) {
             $_POST['connect_add'] = 'add_address';
             $_POST['connect_kind'] = 'family';
@@ -3422,25 +3420,10 @@ class EditorModel extends AdminBaseModel
                     $stmt->execute($params);
                 }
 
+                // *** Update source ***
                 if (isset($_POST['source_title'][$key])) {
-                    $sql = "UPDATE humo_sources SET
-                        source_title = :source_title,
-                        source_text = :source_text,
-                        source_refn = :source_refn,
-                        source_date = :source_date,
-                        source_place = :source_place,
-                        source_changed_user_id = :userid
-                        WHERE source_tree_id = :tree_id AND source_id = :source_id";
-                    $stmt = $this->dbh->prepare($sql);
-                    $stmt->bindValue(':source_title', $_POST['source_title'][$key], PDO::PARAM_STR);
-                    $stmt->bindValue(':source_text', $this->editor_cls->text_process($_POST['source_text'][$key], true), PDO::PARAM_STR);
-                    $stmt->bindValue(':source_refn', $_POST['source_refn'][$key], PDO::PARAM_STR);
-                    $stmt->bindValue(':source_date', $this->editor_cls->date_process("source_date", $key), PDO::PARAM_STR);
-                    $stmt->bindValue(':source_place', $_POST['source_place'][$key], PDO::PARAM_STR);
-                    $stmt->bindValue(':userid', $this->userid, PDO::PARAM_STR);
-                    $stmt->bindValue(':tree_id', $this->tree_id, PDO::PARAM_STR);
-                    $stmt->bindValue(':source_id', $_POST["source_id"][$key], PDO::PARAM_STR);
-                    $stmt->execute();
+                    $source_id = $_POST["source_id"][$key];
+                    $this->db_functions->update_source($source_id, $this->editor_cls, $key);
                 }
             }
         }
@@ -3614,6 +3597,7 @@ class EditorModel extends AdminBaseModel
             $stmt->execute();
         }
 
+        /* This is probably old code. Disabled feb. 2026.
         $save_source_data = false;
         if (isset($_POST['source_change'])) {
             $save_source_data = true;
@@ -3660,6 +3644,7 @@ class EditorModel extends AdminBaseModel
             $stmt->bindValue(':source_id', $_POST["source_id"], PDO::PARAM_STR);
             $stmt->execute();
         }
+        */
 
 
         /**

@@ -128,7 +128,6 @@ function hideshow_date_place($hideshow_date, $hideshow_place)
                             <option value=""><?= __('Results are limited, use search to find more sources.'); ?></option>
                         <?php } ?>
                     <?php } ?>
-
                 </select>
             </form>
         </div>
@@ -205,26 +204,6 @@ if ($editSource['source_id'] || isset($_POST['add_source'])) {
 
             <div class="row mb-2">
                 <div class="col-md-1"></div>
-                <div class="col-md-2">
-                    <label for="source_repo_gedcomnr" class="col-form-label">
-                        <?= __('Repository'); ?>
-                    </label>
-                </div>
-                <div class="col-md-4">
-                    <select size="1" id="source_repo_gedcomnr" name="source_repo_gedcomnr" class="form-select form-select-sm">
-                        <option value=""></option>
-                        <?php while ($repoDb = $repo_qry->fetch(PDO::FETCH_OBJ)) { ?>
-                            <option value="<?= $repoDb->repo_gedcomnr; ?>" <?= $repoDb->repo_gedcomnr == $editSource['data']['repo_gedcomnr'] ? ' selected' : ''; ?>>
-                                <?= $repoDb->repo_gedcomnr; ?>, <?= $repoDb->repo_name; ?> <?= $repoDb->repo_place; ?></option>
-                        <?php } ?>
-                    </select>
-                    <!-- For new repository in new database... -->
-                    <span style="font-size: 13px;"><a href="index.php?page=edit_repositories"><?= __('Add repositories'); ?></a></span>
-                </div>
-            </div>
-
-            <div class="row mb-2">
-                <div class="col-md-1"></div>
                 <div class="col-md-2"><?= __('Publication'); ?></div>
                 <div class="col-md-4">
                     <input type="text" name="source_publ" value="<?= htmlspecialchars($editSource['data']['publ']); ?>" size="60" class="form-control form-control-sm">
@@ -266,7 +245,27 @@ if ($editSource['source_id'] || isset($_POST['add_source'])) {
 
             <div class="row mb-2">
                 <div class="col-md-1"></div>
-                <div class="col-md-2"><?= __('Archive'); ?></div>
+                <div class="col-md-2">
+                    <label for="source_repo_gedcomnr" class="col-form-label">
+                        <?= __('Repository'); ?>
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <select size="1" id="source_repo_gedcomnr" name="source_repo_gedcomnr" class="form-select form-select-sm">
+                        <option value=""></option>
+                        <?php while ($repoDb = $repo_qry->fetch(PDO::FETCH_OBJ)) { ?>
+                            <option value="<?= $repoDb->repo_gedcomnr; ?>" <?= $repoDb->repo_gedcomnr == $editSource['data']['repo_gedcomnr'] ? ' selected' : ''; ?>>
+                                <?= $repoDb->repo_gedcomnr; ?>, <?= $repoDb->repo_name; ?> <?= $repoDb->repo_place; ?></option>
+                        <?php } ?>
+                    </select>
+                    <!-- For new repository in new database... -->
+                    <span style="font-size: 13px;"><a href="index.php?page=edit_repositories"><?= __('Add repositories'); ?></a></span>
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-1"></div>
+                <div class="col-md-2"><?= __('Repository call number'); ?></div>
                 <div class="col-md-4">
                     <input type="text" name="source_repo_caln" value="<?= $editSource['data']['repo_caln']; ?>" size="60" class="form-control form-control-sm">
                 </div>
@@ -274,7 +273,7 @@ if ($editSource['source_id'] || isset($_POST['add_source'])) {
 
             <div class="row mb-2">
                 <div class="col-md-1"></div>
-                <div class="col-md-2"><?= __('Page'); ?></div>
+                <div class="col-md-2"><?= __('Repository page'); ?></div>
                 <div class="col-md-4">
                     <input type="text" name="source_repo_page" value="<?= $editSource['data']['repo_page']; ?>" size="60" class="form-control form-control-sm">
                 </div>

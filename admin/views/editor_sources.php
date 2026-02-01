@@ -32,9 +32,9 @@ $connect_sql = $db_functions->get_connections_connect_id($editSources['connect_k
 $nr_sources = count($connect_sql);
 ?>
 
-<b><?= __('Source'); ?> - <?= $editSources['source_header']; ?></b>
+<h3><?= __('Source'); ?> - <?= $editSources['source_header']; ?></h3>
 
-<form method="POST" action="<?= $phpself2; ?>">
+<form method="POST" action="<?= $phpself2; ?>" class="mt-3">
     <input type="submit" name="submit" title="submit" value="<?= __('Save'); ?>" class="btn btn-sm btn-success">
 
     <!-- TODO check this. Allready added in $phpself2 link -->
@@ -52,22 +52,22 @@ $nr_sources = count($connect_sql);
         style="padding-left:0px;">
 
         <?php foreach ($connect_sql as $connectDb) { ?>
-            <li>
+            <li class="genealogy_search my-2 p-2">
                 <span style="cursor:move;" id="<?= $connectDb->connect_id; ?>" class="handle<?= $editSources['connect_kind'] . $editSources['connect_sub_kind'] . $editSources['connect_connect_id']; ?>">
                     <img src="images/drag-icon.gif" border="0" title="<?= __('Drag to change order (saves automatically)'); ?>" alt="<?= __('Drag to change order'); ?>">
                 </span>
 
                 <input type="hidden" name="connect_change[<?= $connectDb->connect_id; ?>]" value="<?= $connectDb->connect_id; ?>">
                 <input type="hidden" name="connect_connect_id[<?= $connectDb->connect_id; ?>]" value="<?= $connectDb->connect_connect_id; ?>">
-                <?php
-                if (isset($editSources['fam_gedcomnumber'])) {
-                    echo '<input type="hidden" name="marriage_nr[' . $connectDb->connect_id . ']" value="' . $editSources['fam_gedcomnumber'] . '">';
-                }
-                echo '<input type="hidden" name="connect_kind[' . $connectDb->connect_id . ']" value="' . $editSources['connect_kind'] . '">';
-                echo '<input type="hidden" name="connect_sub_kind[' . $connectDb->connect_id . ']" value="' . $editSources['connect_sub_kind'] . '">';
-                echo '<input type="hidden" name="connect_item_id[' . $connectDb->connect_id . ']" value="">';
+                <?php if (isset($editSources['fam_gedcomnumber'])) { ?>
+                    <input type="hidden" name="marriage_nr[<?= $connectDb->connect_id; ?>]" value="<?= $editSources['fam_gedcomnumber']; ?>">
+                <?php } ?>
+                <input type="hidden" name="connect_kind[<?= $connectDb->connect_id; ?>]" value="<?= $editSources['connect_kind']; ?>">
+                <input type="hidden" name="connect_sub_kind[<?= $connectDb->connect_id; ?>]" value="<?= $editSources['connect_sub_kind']; ?>">
+                <input type="hidden" name="connect_item_id[<?= $connectDb->connect_id; ?>]" value="">
 
-                echo ' <a href="index.php?page=' . $page . '&amp;connect_drop=' . $connectDb->connect_id;
+                <?php
+                echo ' <a href="index.php?page=editor_sources&amp;connect_drop=' . $connectDb->connect_id;
                 // *** Needed for events **
                 echo '&amp;connect_kind=' . $editSources['connect_kind'];
                 echo '&amp;connect_sub_kind=' . $editSources['connect_sub_kind'];
@@ -99,7 +99,7 @@ $nr_sources = count($connect_sql);
                     } else {
                         $text .= ' [' . __('Source') . ']';
                     }
-                    echo ' <span class="hideshowlink" onclick="hideShow(' . $hideshow . ');">' . $text;
+                    echo ' <span class="hideshowlink fs-4" onclick="hideShow(' . $hideshow . ');">' . $text;
                     //if ($check_text){
                     //  $return_text .= ' <img src="images/text.png" height="16" alt="' . __('Text') . '">';
                     //}
@@ -119,11 +119,16 @@ $nr_sources = count($connect_sql);
                     if ($connectDb->connect_place) {
                         $connect_place = $connectDb->connect_place;
                     }
+
+                    $repo_qry = $dbh->prepare("SELECT * FROM humo_repositories WHERE repo_tree_id = :tree_id ORDER BY repo_name, repo_place");
+                    $repo_qry->bindValue(':tree_id', $tree_id, PDO::PARAM_STR);
+                    $repo_qry->execute();
+
                     $field_extra_text = 'style="height: 20px; width:500px"';
                 ?>
                     <span class="humo row<?= $hideshow; ?>" style="margin-left:0px;<?= $display; ?>">
-                        <div style="border: 2px solid red">
-                            <div class="row mb-2">
+                        <div class="m-2 p-2" style="border: 2px solid #4a90e2">
+                            <div class="row mb-1">
                                 <div class="col-md-12">
                                     <h2><?= __('Source'); ?></h2>
                                 </div>
@@ -132,48 +137,128 @@ $nr_sources = count($connect_sql);
                             <input type="hidden" name="connect_source_id[<?= $connectDb->connect_id; ?>]" value="<?= $connectDb->connect_source_id; ?>">
                             <input type="hidden" name="source_id[<?= $connectDb->connect_id; ?>]" value="<?= $sourceDb->source_id; ?>">
 
-                            <div class="row mb-2">
+                            <div class="row mb-1">
+                                <label for="source_title" class="col-sm-3 col-form-label"><?= __('Status'); ?></label>
+                                <div class="col-md-7">
+                                    <select size="1" id="source_status" name="source_status[<?= $connectDb->connect_id; ?>]" class="form-select form-select-sm">
+                                        <option value="publish" <?= $sourceDb->source_status == 'publish' ? ' selected' : ''; ?>><?= __('publish'); ?></option>
+                                        <option value="restricted" <?= $sourceDb->source_status == 'restricted' ? ' selected' : ''; ?>><?= __('restricted'); ?></option>
+                                    </select>
+                                    <span style="font-size: 13px;"><?= __('restricted = only visible for selected user groups'); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
                                 <label for="source_title" class="col-sm-3 col-form-label"><?= __('Title'); ?></label>
                                 <div class="col-md-7">
                                     <input type="text" name="source_title[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_title); ?>" size="60" class="form-control form-control-sm">
                                 </div>
                             </div>
 
-                            <div class="row mb-2">
+                            <div class="row mb-1">
+                                <label for="source_subj" class="col-sm-3 col-form-label"><?= __('Subject'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_subj[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_subj); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
                                 <label for="source_date" class="col-sm-3 col-form-label"><?= __('Date'); ?></label>
                                 <div class="col-md-7">
                                     <?php $editor_cls->date_show($sourceDb->source_date, 'source_date', "[$connectDb->connect_id]"); ?>
                                 </div>
                             </div>
 
-                            <div class="row mb-2">
+                            <div class="row mb-1">
                                 <label for="source_place" class="col-sm-3 col-form-label"><?= __('Place'); ?></label>
                                 <div class="col-md-7">
                                     <input type="text" name="source_place[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_place); ?>" placeholder="<?= __('Start typing to search for a place.'); ?>" size="15" class="place-autocomplete form-control form-control-sm">
                                 </div>
                             </div>
 
-                            <div class="row mb-2">
-                                <label for="source_own_code" class="col-sm-3 col-form-label"><?= __('Own code'); ?></label>
+                            <div class="row mb-1">
+                                <label for="source_publ" class="col-sm-3 col-form-label"><?= __('Publication'); ?></label>
                                 <div class="col-md-7">
-                                    <input type="text" name="source_refn[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_refn); ?>" size="15" class="form-control form-control-sm">
+                                    <input type="text" name="source_publ[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_publ); ?>" size="15" class="form-control form-control-sm">
+                                    <span style="font-size: 13px;">https://... <?= __('will be shown as a link.'); ?></span>
                                 </div>
                             </div>
 
-                            <div class="row mb-2">
+                            <div class="row mb-1">
+                                <label for="source_own_code" class="col-sm-3 col-form-label"><?= __('Own code'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_refn[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_refn); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_auth" class="col-sm-3 col-form-label"><?= __('Author'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_auth[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_auth); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_item" class="col-sm-3 col-form-label"><?= __('Nr.'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_item[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_item); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_kind" class="col-sm-3 col-form-label"><?= __('Kind'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_kind[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_kind); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_place" class="col-sm-3 col-form-label"><?= __('Repository'); ?></label>
+                                <div class="col-md-7">
+                                    <select size="1" id="source_repo_gedcomnr" name="source_repo_gedcomnr[<?= $connectDb->connect_id; ?>]" class="form-select form-select-sm">
+                                        <option value=""></option>
+                                        <?php while ($repoDb = $repo_qry->fetch(PDO::FETCH_OBJ)) { ?>
+                                            <option value="<?= $repoDb->repo_gedcomnr; ?>" <?= $repoDb->repo_gedcomnr == $sourceDb->source_repo_gedcomnr ? ' selected' : ''; ?>>
+                                                <?= $repoDb->repo_gedcomnr; ?>, <?= $repoDb->repo_name; ?> <?= $repoDb->repo_place; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <!-- For new repository in new database... -->
+                                    <?php /*
+                                    <span style="font-size: 13px;">
+                                        <a href="index.php?page=edit_repositories"><?= __('Add repositories'); ?></a>
+                                    </span>
+                                    */ ?>
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_repo_caln" class="col-sm-3 col-form-label"><?= __('Repository call number'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_repo_caln[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_repo_caln); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <div class="row mb-1">
+                                <label for="source_repo_page" class="col-sm-3 col-form-label"><?= __('Repository page'); ?></label>
+                                <div class="col-md-7">
+                                    <input type="text" name="source_repo_page[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($sourceDb->source_repo_page); ?>" size="60" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <!-- TODO Picture by source -->
+
+                            <div class="row mb-1">
                                 <label for="source_text" class="col-sm-3 col-form-label"><?= __('Text'); ?></label>
                                 <div class="col-md-7">
                                     <textarea rows="2" name="source_text[<?= $connectDb->connect_id; ?>]" <?= $field_text; ?> class=" form-control form-control-sm"><?= $editor_cls->text_show($sourceDb->source_text); ?></textarea>
                                 </div>
                             </div>
 
-                            <!-- TODO Picture by source -->
-
                             <?php
                             // *** Source added by user ***
                             if ($sourceDb->source_new_user_id || $sourceDb->source_new_datetime) {
                             ?>
-                                <div class="row mb-2">
+                                <div class="row mb-1">
                                     <div class="col-md-3"><?= __('Added by'); ?></div>
                                     <div class="col-md-7">
                                         <?= $languageDate->show_datetime($sourceDb->source_new_datetime) . ' ' . $db_functions->get_user_name($sourceDb->source_new_user_id); ?>
@@ -185,7 +270,7 @@ $nr_sources = count($connect_sql);
                             // *** Source changed by user ***
                             if ($sourceDb->source_changed_user_id || $sourceDb->source_changed_datetime) {
                             ?>
-                                <div class="row mb-2">
+                                <div class="row mb-1">
                                     <div class="col-md-3"><?= __('Changed by'); ?></div>
                                     <div class="col-md-7">
                                         <?= $languageDate->show_datetime($sourceDb->source_changed_datetime) . ' ' . $db_functions->get_user_name($sourceDb->source_changed_user_id); ?>
@@ -195,14 +280,15 @@ $nr_sources = count($connect_sql);
 
                         </div>
 
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <div class="col-md-12">
                                 <h2><?= __('Source citation'); ?></h2>
+                                <span style="font-size:13px;"><?= __('Information about how this source is connected to the selected person/family/event.'); ?></span>
                             </div>
                         </div>
 
                         <!-- Source connection items -->
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="source_role" class="col-sm-3 col-form-label"><?= __('Sourcerole'); ?></label>
                             <div class="col-md-7">
                                 <input type="text" name="connect_role[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($connect_role); ?>" size="6" class="form-control form-control-sm">
@@ -210,7 +296,7 @@ $nr_sources = count($connect_sql);
                             </div>
                         </div>
 
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="source_page" class="col-sm-3 col-form-label"><?= __('Page'); ?></label>
                             <div class="col-md-7">
                                 <input type="text" name="connect_page[<?= $connectDb->connect_id; ?>]" value="<?= $connectDb->connect_page; ?>" size="6" class="form-control form-control-sm">
@@ -219,7 +305,7 @@ $nr_sources = count($connect_sql);
                         </div>
 
                         <!-- Quality -->
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="source_quality" class="col-sm-3 col-form-label"><?= __('Quality'); ?></label>
                             <div class="col-md-7">
                                 <select size="1" id="source_quality" name="connect_quality[<?= $connectDb->connect_id; ?>]" class="form-select form-select-sm">
@@ -232,14 +318,14 @@ $nr_sources = count($connect_sql);
                             </div>
                         </div>
 
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="connect_date" class="col-sm-3 col-form-label"><?= __('Date'); ?></label>
                             <div class="col-md-7">
                                 <?php $editor_cls->date_show($connectDb->connect_date, 'connect_date', "[$connectDb->connect_id]"); ?>
                             </div>
                         </div>
 
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="connect_place" class="col-sm-3 col-form-label"><?= __('Place'); ?></label>
                             <div class="col-md-7">
                                 <input type="text" name="connect_place[<?= $connectDb->connect_id; ?>]" value="<?= htmlspecialchars($connect_place); ?>" size="15" class="form-control form-control-sm">
@@ -247,7 +333,7 @@ $nr_sources = count($connect_sql);
                         </div>
 
                         <!-- Extra text by shared source -->
-                        <div class="row mb-2">
+                        <div class="row mb-1">
                             <label for="connect_text" class="col-sm-3 col-form-label"><?= __('Extra text'); ?></label>
                             <div class="col-md-7">
                                 <textarea rows="2" name="connect_text[<?= $connectDb->connect_id; ?>]" <?= $field_extra_text; ?> class="form-control form-control-sm"><?= $editor_cls->text_show($connectDb->connect_text); ?></textarea>
@@ -326,7 +412,7 @@ $nr_sources = count($connect_sql);
 
                     <!-- Add new source -->
                     <br><?= __('Or:'); ?>
-                    <a href="index.php?page=<?= $page; ?>&amp;source_add2=1&amp;connect_id=<?= $connectDb->connect_id; ?>
+                    <a href="index.php?page=editor_sources&amp;source_add2=1&amp;connect_id=<?= $connectDb->connect_id; ?>
                         &amp;connect_order=<?= $connectDb->connect_order; ?>&amp;connect_kind=<?= $connectDb->connect_kind; ?>
                         &amp;connect_sub_kind=<?= $connectDb->connect_sub_kind; ?>&amp;connect_connect_id=<?= $connectDb->connect_connect_id; ?>
                     <?php
@@ -352,9 +438,7 @@ $nr_sources = count($connect_sql);
 
 <!-- Add new source connection -->
 <?php if (!isset($_POST['connect_add'])) { ?>
-    <h3><?= __('Add'); ?></h3>
     <form method="POST" action="<?= $phpself2; ?>">
-
         <!-- TODO check this. Allready added in $phpself2 link -->
         <?php if ($event_person) { ?>
             <input type="hidden" name="event_person" value="1">
