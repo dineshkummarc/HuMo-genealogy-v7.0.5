@@ -198,7 +198,7 @@ class PersonPopup
 
             $dropdown_style = '';
             if ($text_extended) {
-                $dropdown_style = 'style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: 0rem; --bs-btn-font-size: .6rem;"';
+                $dropdown_style = 'style="--bs-btn-padding-y: 0rem; --bs-btn-padding-x: 0rem; --bs-btn-font-size: .6rem; text-align: left;"';
             }
 
             $dropdown_width = '350px';

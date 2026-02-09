@@ -10,10 +10,9 @@
  *
  * https://humo-gen.com
  *
- * Copyright (C) 2008-2025 Huub Mons,
+ * Copyright (C) 2008-2026 Huub Mons,
  * Klaas de Winkel, Jan Maat, Jeroen Beemster, Louis Ywema, Theo Huitema,
- * Reni Janssen, Yossi Beck
- * and others.
+ * Reni Janssen, Yossi Beck and others.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

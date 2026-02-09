@@ -44,7 +44,14 @@ class AncestorBox
             $personDb = $db_functions->get_person($data["gedcomnumber"][$id]);
             $pers_privacy = $personPrivacy->get_privacy($personDb);
             $name = $personName->get_person_name($personDb, $pers_privacy);
-            $name2 = $directionMarkers->dirmark2 . $name["name"] . $name["colour_mark"] . $directionMarkers->dirmark2;
+            //$name2 = $directionMarkers->dirmark2 . $name["name"] . $name["colour_mark"] . $directionMarkers->dirmark2;
+            $name2 = $name["name"] . $name["colour_mark"];
+
+            // *** Adjust long name for boxes ***
+            if ($box_appearance != 'small' && $box_appearance != 'medium' && (strpos($box_appearance, "hour") === false || $box_appearance == "hour50") && strlen($name2) > 20) {
+                //$name2 = preg_replace('/ /', '<br>', $name2, 1); // Replace first space by a break
+                $name2 = preg_replace('/ ([^ ]*)$/', '<br>$1', $name2); // Replace last space by a break
+            }
 
             // *** Replace pop-up icon by a text box ***
             $replacement_text = '<span class="anc_box_name' . $ancestor_sheet . '">' . $name2 . '</span>';
@@ -65,23 +72,23 @@ class AncestorBox
                     //if ($personDb->pers_birth_date OR $personDb->pers_birth_place){
                     if ($personDb->pers_birth_date) {
                         //$replacement_text.='<br>'.__('*').$directionMarkers->dirmark1.' '.$datePlace->date_place($personDb->pers_birth_date,$personDb->pers_birth_place); }
-                        $replacement_text .= '<br>' . __('*') . $directionMarkers->dirmark1 . ' ' . $datePlace->date_place($personDb->pers_birth_date, '');
+                        $replacement_text .= '<br>' . __('*') . ' ' . $datePlace->date_place($personDb->pers_birth_date, '');
                     }
                     //elseif ($personDb->pers_bapt_date OR $personDb->pers_bapt_place){
                     elseif ($personDb->pers_bapt_date) {
                         //$replacement_text.='<br>'.__('~').$directionMarkers->dirmark1.' '.$datePlace->date_place($personDb->pers_bapt_date,$personDb->pers_bapt_place); }
-                        $replacement_text .= '<br>' . __('~') . $directionMarkers->dirmark1 . ' ' . $datePlace->date_place($personDb->pers_bapt_date, '');
+                        $replacement_text .= '<br>' . __('~') . ' ' . $datePlace->date_place($personDb->pers_bapt_date, '');
                     }
 
                     //if ($personDb->pers_death_date OR $personDb->pers_death_place){
                     if ($personDb->pers_death_date) {
                         //$replacement_text.='<br>'.__('&#134;').$directionMarkers->dirmark1.' '.$datePlace->date_place($personDb->pers_death_date,$personDb->pers_death_place); }
-                        $replacement_text .= '<br>' . __('&#134;') . $directionMarkers->dirmark1 . ' ' . $datePlace->date_place($personDb->pers_death_date, '');
+                        $replacement_text .= '<br>' . __('&#134;') . ' ' . $datePlace->date_place($personDb->pers_death_date, '');
                     }
                     //elseif ($personDb->pers_buried_date OR $personDb->pers_buried_place){
                     elseif ($personDb->pers_buried_date) {
                         //$replacement_text.='<br>'.__('[]').$directionMarkers->dirmark1.' '.$datePlace->date_place($personDb->pers_buried_date,$personDb->pers_buried_place); }
-                        $replacement_text .= '<br>' . __('[]') . $directionMarkers->dirmark1 . ' ' . $datePlace->date_place($personDb->pers_buried_date, '');
+                        $replacement_text .= '<br>' . __('[]') . ' ' . $datePlace->date_place($personDb->pers_buried_date, '');
                     }
 
                     if ($box_appearance != 'medium') {
@@ -96,7 +103,7 @@ class AncestorBox
                         //if ($marr_date OR $marr_place){
                         if ($marr_date) {
                             //$replacement_text.='<br>'.__('X').$directionMarkers->dirmark1.' '.$datePlace->date_place($marr_date,$marr_place); }
-                            $replacement_text .= '<br>' . __('X') . $directionMarkers->dirmark1 . ' ' . $datePlace->date_place($marr_date, '');
+                            $replacement_text .= '<br>' . __('X') . ' ' . $datePlace->date_place($marr_date, '');
                         }
                     }
                     if ($box_appearance == 'ancestor_sheet_marr') {

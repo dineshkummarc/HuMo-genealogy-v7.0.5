@@ -18,7 +18,7 @@ class GeneralSettings
 
         // *** Version line, DO NOT CHANGE THIS LINE ***
         // Version nummering: 1.1.1.1 (main number, sub number, update, etc.)
-        $humo_option["version"] = '7.0.4';  // Version line, DO NOT CHANGE THIS LINE
+        $humo_option["version"] = '7.0.5';  // Version line, DO NOT CHANGE THIS LINE
         // >>>> July 2022: also change admin\update\version_check.txt. In use for update check using GitHub.
 
         // *** Beta (not stable enough for production, but it's functional ***
@@ -27,7 +27,7 @@ class GeneralSettings
 
         // *** Version date, needed for update check ***
         //$humo_option["version_date"]='2019-09-01';  // Version date yyyy-mm-dd, DO NOT CHANGE THIS LINE
-        $humo_option["version_date"] = '2025-12-28';  // Version date yyyy-mm-dd, DO NOT CHANGE THIS LINE
+        $humo_option["version_date"] = '2026-02-09';  // Version date yyyy-mm-dd, DO NOT CHANGE THIS LINE
         // >>>> July 2022: also change admin\update\version_check.txt. In use for update through GitHub.
 
         // *** Test lines for update procedure ***
@@ -403,6 +403,11 @@ class GeneralSettings
         if (!isset($humo_option["debug_admin_pages"])) {
             $humo_option["debug_admin_pages"] = 'n';
             $dbh->query("INSERT INTO humo_settings SET setting_variable='debug_admin_pages', setting_value='n'");
+        }
+
+        if (!isset($humo_option["debug_show_deprecated"])) {
+            $humo_option["debug_show_deprecated"] = 'n';
+            $dbh->query("INSERT INTO humo_settings SET setting_variable='debug_show_deprecated', setting_value='n'");
         }
 
         if (!isset($humo_option["hide_languages"])) {

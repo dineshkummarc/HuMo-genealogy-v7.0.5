@@ -12,10 +12,9 @@
  *
  * ----------
  *
- * Copyright (C) 2008-2025 Huub Mons,
+ * Copyright (C) 2008-2026 Huub Mons,
  * Klaas de Winkel, Jan Maat, Jeroen Beemster, Louis Ywema, Theo Huitema,
- * René Janssen, Yossi Beck
- * and others.
+ * René Janssen, Yossi Beck and others.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,7 +117,11 @@ if (isset($database_check) && $database_check) {
 
         // *** Debug HuMo-genealogy`admin pages ***
         if ($humo_option["debug_admin_pages"] == 'y') {
-            error_reporting(E_ALL);
+            if ($humo_option["debug_show_deprecated"] == 'n') {
+                error_reporting(E_ALL & ~E_DEPRECATED);
+            } else {
+                error_reporting(E_ALL);
+            }
             ini_set('display_errors', 1);
         }
 
@@ -446,7 +449,7 @@ if (isset($_GET['page']) && $_GET['page'] == 'close_popup') {
 } else {
 ?>
 
-    <body <?= isset($_GET['page']) && $_GET['page'] == 'maps' ? 'onload="initialize()"' : ''; ?> class="humo">
+    <body <?= isset($_GET['page']) && $_GET['page'] == 'maps' && $humo_option['use_world_map'] == 'Google' ? 'onload="initialize()"' : ''; ?> class="humo">
     <?php
 }
 

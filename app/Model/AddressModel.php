@@ -65,7 +65,7 @@ class AddressModel extends BaseModel
                 $date = $datePlace->date_place($eventDb->connect_date, '');
 
                 $text .= '<div class="row">';
-                $text .= '<div class="col-md-1">' . $date . '</div><div class="col-md-11"><a href="' . $url . '">' . $name["standard_name"] . '</a>';
+                $text .= '<div class="col-md-2">' . $date . '</div><div class="col-md-10"><a href="' . $url . '">' . $name["standard_name"] . '</a>';
                 if ($eventDb->connect_role) {
                     $text .= '; ' . $eventDb->connect_role;
                 }
@@ -91,7 +91,7 @@ class AddressModel extends BaseModel
                     $date = $datePlace->date_place($relationDb->connect_date, '');
                     
                     $text .= '<div class="row">';
-                    $text .= '<div class="col-md-1">' . $date . '</div><div class="col-md-11">';
+                    $text .= '<div class="col-md-2">' . $date . '</div><div class="col-md-10">';
 
                     // *** Show man (father) ***
                     if ($relationData->partner1_id) {
@@ -126,8 +126,6 @@ class AddressModel extends BaseModel
             }
         }
         unset($relation_qry);
-
-
 
         return $text;
     }
