@@ -449,7 +449,7 @@ if (isset($_GET['page']) && $_GET['page'] == 'close_popup') {
 } else {
 ?>
 
-    <body <?= isset($_GET['page']) && $_GET['page'] == 'maps' ? 'onload="initialize()"' : ''; ?> class="humo">
+    <body <?= isset($_GET['page']) && $_GET['page'] == 'maps' && $humo_option['use_world_map'] == 'Google' ? 'onload="initialize()"' : ''; ?> class="humo">
     <?php
 }
 

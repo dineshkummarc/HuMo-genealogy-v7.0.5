@@ -34,8 +34,7 @@ $data2Db = $stmt->fetch(PDO::FETCH_OBJ);
     </li>
 </ul>
 
-<!-- Align content to the left -->
-<div style="float: left; background-color:white; height:500px; padding:10px;">
+<div style="background-color:white; height:500px; padding:10px;">
     <?php if ($thumbs['menu_tab'] == 'picture_settings' || $thumbs['menu_tab'] == 'picture_thumbnails' || $thumbs['menu_tab'] == 'picture_show') { ?>
         <div class="p-3 m-2 genealogy_search">
 
