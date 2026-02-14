@@ -153,7 +153,7 @@ class AdminSourceModel extends AdminBaseModel
                 $editSource['data']['changed_datetime'] = $sourceDb->source_changed_datetime;
             }
         }
-            return $editSource;
+        return $editSource;
     }
 
     public function update_source($editor_cls): void
@@ -228,45 +228,10 @@ class AdminSourceModel extends AdminBaseModel
             $this->source_id = $this->dbh->lastInsertId();
         }
 
-        // Remark: source_change in editorModel.php (used to change sources in familyscreen).
+        // *** Update source ***
         if (isset($_POST['source_change2'])) {
-            $sql = "UPDATE humo_sources SET
-                source_status = :source_status,
-                source_title = :source_title,
-                source_date = :source_date,
-                source_place = :source_place,
-                source_publ = :source_publ,
-                source_refn = :source_refn,
-                source_auth = :source_auth,
-                source_subj = :source_subj,
-                source_item = :source_item,
-                source_kind = :source_kind,
-                source_repo_caln = :source_repo_caln,
-                source_repo_page = :source_repo_page,
-                source_repo_gedcomnr = :source_repo_gedcomnr,
-                source_text = :source_text,
-                source_changed_user_id = :source_changed_user_id
-            WHERE source_tree_id = :source_tree_id AND source_id = :source_id";
-            $stmt = $this->dbh->prepare($sql);
-            $stmt->execute([
-                ':source_status' => $_POST['source_status'],
-                ':source_title' => $_POST['source_title'],
-                ':source_date' => $editor_cls->date_process('source_date'),
-                ':source_place' => $_POST['source_place'],
-                ':source_publ' => $_POST['source_publ'],
-                ':source_refn' => $_POST['source_refn'],
-                ':source_auth' => $_POST['source_auth'],
-                ':source_subj' => $_POST['source_subj'],
-                ':source_item' => $_POST['source_item'],
-                ':source_kind' => $_POST['source_kind'],
-                ':source_repo_caln' => $_POST['source_repo_caln'],
-                ':source_repo_page' => $_POST['source_repo_page'],
-                ':source_repo_gedcomnr' => $_POST['source_repo_gedcomnr'],
-                ':source_text' => $editor_cls->text_process($_POST['source_text'], true),
-                ':source_changed_user_id' => $userid,
-                ':source_tree_id' => $this->tree_id,
-                ':source_id' => $this->source_id
-            ]);
+            $source_id = $_POST["source_id"];
+            $this->db_functions->update_source($source_id, $editor_cls);
         }
 
         if (isset($_POST['source_remove2'])) {

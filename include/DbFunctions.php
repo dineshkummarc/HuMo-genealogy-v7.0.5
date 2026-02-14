@@ -23,6 +23,7 @@
  *      get_events_kind             Get multiple events of one event_kind from database. Example:
  *      get_events_connect          Get multiple events of a connected person, family etc. selecting one event_kind from database.
  *      get_source                  Get a single source from database.
+ *      update_source               Update a source in database.
  *      get_address                 Get a single address from database.
  *      get_addressses              Get all addresses (places) by a person, family, etc.
  *      get_connections             Get multiple connections (used for sources and addresses).
@@ -948,6 +949,80 @@ class DbFunctions
             echo $e->getMessage() . "<br/>";
         }
         return $source;
+    }
+
+    /**
+     * FUNCTION     : Update a source in database.
+     * QUERY        : UPDATE humo_sources SET ... WHERE source_tree_id = :source_tree_id AND source_id = :source_id
+     */
+    public function update_source($source_id, $editor_cls, $key = '')
+    {
+        $userid = false;
+        if (is_numeric($_SESSION['user_id_admin'])) {
+            $userid = $_SESSION['user_id_admin'];
+        }
+
+        $sql = "UPDATE humo_sources SET
+            source_status = :source_status,
+            source_title = :source_title,
+            source_date = :source_date,
+            source_place = :source_place,
+            source_publ = :source_publ,
+            source_refn = :source_refn,
+            source_auth = :source_auth,
+            source_subj = :source_subj,
+            source_item = :source_item,
+            source_kind = :source_kind,
+            source_repo_caln = :source_repo_caln,
+            source_repo_page = :source_repo_page,
+            source_repo_gedcomnr = :source_repo_gedcomnr,
+            source_text = :source_text,
+            source_changed_user_id = :source_changed_user_id
+            WHERE source_tree_id = :source_tree_id AND source_id = :source_id";
+        $stmt = $this->dbh->prepare($sql);
+
+        if ($key && is_numeric($key)) {
+            // *** For multiple sources (in arrays) ***
+            $stmt->execute([
+                ':source_status' => $_POST['source_status'][$key],
+                ':source_title' => $_POST['source_title'][$key],
+                ':source_date' => $editor_cls->date_process('source_date', $key),
+                ':source_place' => $_POST['source_place'][$key],
+                ':source_publ' => $_POST['source_publ'][$key],
+                ':source_refn' => $_POST['source_refn'][$key],
+                ':source_auth' => $_POST['source_auth'][$key],
+                ':source_subj' => $_POST['source_subj'][$key],
+                ':source_item' => $_POST['source_item'][$key],
+                ':source_kind' => $_POST['source_kind'][$key],
+                ':source_repo_caln' => $_POST['source_repo_caln'][$key],
+                ':source_repo_page' => $_POST['source_repo_page'][$key],
+                ':source_repo_gedcomnr' => $_POST['source_repo_gedcomnr'][$key],
+                ':source_text' => $editor_cls->text_process($_POST['source_text'][$key], true),
+                ':source_changed_user_id' => $userid,
+                ':source_tree_id' => $this->tree_id,
+                ':source_id' => $source_id
+            ]);
+        } else {
+            $stmt->execute([
+                ':source_status' => $_POST['source_status'],
+                ':source_title' => $_POST['source_title'],
+                ':source_date' => $editor_cls->date_process('source_date'),
+                ':source_place' => $_POST['source_place'],
+                ':source_publ' => $_POST['source_publ'],
+                ':source_refn' => $_POST['source_refn'],
+                ':source_auth' => $_POST['source_auth'],
+                ':source_subj' => $_POST['source_subj'],
+                ':source_item' => $_POST['source_item'],
+                ':source_kind' => $_POST['source_kind'],
+                ':source_repo_caln' => $_POST['source_repo_caln'],
+                ':source_repo_page' => $_POST['source_repo_page'],
+                ':source_repo_gedcomnr' => $_POST['source_repo_gedcomnr'],
+                ':source_text' => $editor_cls->text_process($_POST['source_text'], true),
+                ':source_changed_user_id' => $userid,
+                ':source_tree_id' => $this->tree_id,
+                ':source_id' => $source_id
+            ]);
+        }
     }
 
     /**

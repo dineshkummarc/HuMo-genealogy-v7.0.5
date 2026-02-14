@@ -53,18 +53,28 @@ class UsersModel extends AdminBaseModel
         }
 
         if (isset($_POST['add_user']) && is_numeric($_POST["add_group_id"])) {
-            $user_prep = $this->dbh->prepare("INSERT INTO humo_users SET
-                user_name=:add_username, user_mail=:add_usermail,
-                user_password_salted=:add_password_salted, user_group_id=:add_group_id");
-            $user_prep->bindValue(':add_username', $_POST["add_username"], PDO::PARAM_STR);
-            $user_prep->bindValue(':add_usermail', $_POST["add_usermail"]);
-            $hashToStoreInDb = password_hash($_POST["add_password"], PASSWORD_DEFAULT);
-            $user_prep->bindValue(':add_password_salted', $hashToStoreInDb);
-            $user_prep->bindValue(':add_group_id', $_POST["add_group_id"], PDO::PARAM_INT);
-            try {
-                $user_prep->execute();
-            } catch (PDOException $e) {
-                $alert =  __('Error: user name probably allready exist.') . '<br>';
+            // Validate username and password are not empty
+            $add_username = trim($_POST["add_username"] ?? '');
+            $add_password = trim($_POST["add_password"] ?? '');
+            
+            if (empty($add_username)) {
+                $alert = __('Error: username cannot be empty.') . '<br>';
+            } elseif (empty($add_password)) {
+                $alert = __('Error: password cannot be empty.') . '<br>';
+            } else {
+                $user_prep = $this->dbh->prepare("INSERT INTO humo_users SET
+                    user_name=:add_username, user_mail=:add_usermail,
+                    user_password_salted=:add_password_salted, user_group_id=:add_group_id");
+                $user_prep->bindValue(':add_username', $add_username, PDO::PARAM_STR);
+                $user_prep->bindValue(':add_usermail', $_POST["add_usermail"]);
+                $hashToStoreInDb = password_hash($add_password, PASSWORD_DEFAULT);
+                $user_prep->bindValue(':add_password_salted', $hashToStoreInDb);
+                $user_prep->bindValue(':add_group_id', $_POST["add_group_id"], PDO::PARAM_INT);
+                try {
+                    $user_prep->execute();
+                } catch (PDOException $e) {
+                    $alert =  __('Error: user name probably allready exist.') . '<br>';
+                }
             }
         }
 
